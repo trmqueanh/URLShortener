@@ -1,0 +1,93 @@
+﻿@model URLShortener.MVC.Models.HomeModel
+
+@{
+    ViewData["Title"] = "URL Shortener";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="text-center mb-0">URL Shortener</h2>
+                </div>
+                <div class="card-body">
+                    @if (ViewBag.Message != null)
+                    {
+                        <div class="alert alert-success d-flex align-items-center justify-content-between">
+                            <div>
+                                <strong>Success!</strong> 
+                                <span id="shortUrlText">@ViewBag.Message</span>
+                            </div>
+                            <button class="btn btn-outline-secondary btn-sm" onclick="copyShortUrl()">
+                                <i class="bi bi-clipboard"></i> Copy
+                            </button>
+                        </div>
+                        
+                        
+                    }
+
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger">
+                            <h5>Please correct the following errors:</h5>
+                            <div asp-validation-summary="All" class="text-danger"></div>
+                        </div>
+                    }
+
+                    <form asp-action="Index" method="post">
+                        <div class="form-group mb-3">
+                            <label asp-for="Description" class="form-label">Description</label>
+                            <input asp-for="Description" class="form-control" placeholder="Enter a description for your URL" />
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="OriginalUrl" class="form-label">Original URL</label>
+                            <input asp-for="OriginalUrl" class="form-control" placeholder="https://example.com" />
+                            <span asp-validation-for="OriginalUrl" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="CharacterCount" class="form-label">Number of Characters for Shortened URL</label>
+                            <input asp-for="CharacterCount" class="form-control" type="number" min="3" max="20" value="6" />
+                            <div class="form-text">Choose between 3-20 characters for your shortened URL</div>
+                            <span asp-validation-for="CharacterCount" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-link-45deg"></i> Generate Shortened URL
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        function copyShortUrl() {
+            var text = document.getElementById('shortUrlText').innerText.replace('Your shortened URL is: ', '').trim();
+            navigator.clipboard.writeText(text).then(function() {
+                // Show success message
+                var button = event.target;
+                var originalText = button.innerHTML;
+                button.innerHTML = '<i class="bi bi-check"></i> Copied!';
+                button.classList.remove('btn-outline-secondary');
+                button.classList.add('btn-success');
+                
+                setTimeout(function() {
+                    button.innerHTML = originalText;
+                    button.classList.remove('btn-success');
+                    button.classList.add('btn-outline-secondary');
+                }, 2000);
+            });
+        }
+    </script>
+}
